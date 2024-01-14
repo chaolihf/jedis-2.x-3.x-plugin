@@ -6,9 +6,8 @@ apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
-group="com.chinatelecom.udp.core"
-sourceCompatibility = 11
-
+group="com.chinatelecom.oneops.skywalking"
+sourceCompatibility = 8
 
 def devzzkfUsername = System.getenv("SrdCloudUserName")
 def devzzkfPassword = System.getenv("SrdCloudPassword")
@@ -27,14 +26,6 @@ println "制品的版本号为" + version
 
 repositories {
 	maven {
-		url "https://artifact.srdcloud.cn/artifactory/unifiedplatform-udp-release-maven-local"
-		credentials {
-            username devzzkfUsername
-            password devzzkfPassword
-        }
-	}
-	
-	maven {
 		url "https://artifact.srdcloud.cn/artifactory/public-maven-virtual"
 	}
 	maven {
@@ -49,13 +40,13 @@ task sourcesJar(type: Jar) {
 
 jar {
     manifest {
-        attributes 'Implementation-Title': 'Lang Library', 'Implementation-Version': version
+        attributes 'Implementation-Title': 'skywalking jedis 2-3x plugins', 'Implementation-Version': version
     }
 }
 dependencies {
 	api(
 		'org.apache.skywalking:apm-agent-core:9.1.0',
-		"redis.clients:jedis:2.9.0",
+		"redis.clients:jedis:3.9.0",
 	)
 	
 	testImplementation(
@@ -72,12 +63,12 @@ dependencies {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            artifactId = 'lang-library'
+            artifactId = 'skywalking jedis 2-3x plugins'
             from components.java
             artifact sourcesJar
             pom {
-		        name = "lang-library"
-		        description = "base library"
+		        name = "skywalking jedis 2-3x plugins"
+		        description = "skywalking jedis 2-3x plugins"
 		        url = "http://www.ahoa.com:8101/ahdxgitlab/ahit/platform/"
 		        licenses {
 		          license {
@@ -111,9 +102,3 @@ publishing {
     }
 }
 
-test {
-	useJUnitPlatform()
-    testLogging {
-        events "passed"
-    }
-}

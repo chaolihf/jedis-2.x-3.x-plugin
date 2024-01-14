@@ -50,10 +50,9 @@ public class JedisMethodInterceptor implements InstanceMethodsAroundInterceptor 
             Tags.CACHE_CMD.set(span, methodName);
             getKey(allArguments).ifPresent(key -> Tags.CACHE_KEY.set(span, key));
             parseOperation(methodName).ifPresent(op -> Tags.CACHE_OP.set(span, op));
-            if (!JedisPluginConfig.Plugin.Jedis.TRACE_REDIS_PARAMETERS && allArguments.length > 0) {
-                new StringTag(2418, "cache.value").set(span, allArguments[1].toString());
+            if (JedisPluginConfig.Plugin.Jedis.TRACE_REDIS_PARAMETERS && allArguments.length > 1) {
+                new StringTag(24, "cache.value").set(span, allArguments[1].toString());
             }
-            
         }
     }
 
@@ -66,16 +65,10 @@ public class JedisMethodInterceptor implements InstanceMethodsAroundInterceptor 
         }
         Object argument = allArguments[0];
         // include null
-        String value = null;
-        if (argument instanceof String) {
-            value = (String) argument;
-        } else if (argument instanceof byte[]) {
-            value = new String((byte[]) argument);
-        } 
-        if (value == null) {
+        if (!(argument instanceof String)) {
             return Optional.empty();
         }
-        return Optional.of(StringUtil.cut(value, JedisPluginConfig.Plugin.Jedis.REDIS_PARAMETER_MAX_LENGTH));
+        return Optional.of(StringUtil.cut((String) argument, JedisPluginConfig.Plugin.Jedis.REDIS_PARAMETER_MAX_LENGTH));
     }
 
     @Override
